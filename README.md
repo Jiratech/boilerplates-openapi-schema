@@ -1,0 +1,1 @@
+# boilerplate-openapi-schema
