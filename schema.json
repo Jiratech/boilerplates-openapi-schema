@@ -113,6 +113,31 @@
         }
       }
     },
+    "/authentication/refresh": {
+      "get": {
+        "security": [
+          {
+            "RefreshKeyAuth": []
+          }
+        ],
+        "tags": [
+          "authentication"
+        ],
+        "summary": "get new access token",
+        "description": "send refresh token to get new access token",
+        "operationId": "refresh",
+        "x-eov-operation-handler": "controllers/AuthenticationController",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "The request has been fulfilled and has resulted in one or more new resources being created"
+          },
+          "440": {
+            "description": "Your session has expired"
+          }
+        }
+      }
+    },
     "/roles": {
       "get": {
         "tags": [
@@ -142,8 +167,13 @@
     },
     "/users": {
       "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "tags": [
-          "users"
+          "user"
         ],
         "summary": "get all users",
         "description": "",
@@ -170,10 +200,15 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/user/{userId}": {
       "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "tags": [
-          "users"
+          "user"
         ],
         "summary": "get one user",
         "description": "Get one user using an id",
@@ -181,11 +216,12 @@
         "x-eov-operation-handler": "controllers/UserController",
         "parameters": [
           {
-            "in": "path",
             "name": "userId",
+            "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -212,8 +248,13 @@
         }
       },
       "put": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "tags": [
-          "users"
+          "user"
         ],
         "summary": "modify one user",
         "description": "Modify a user using an id",
@@ -225,7 +266,8 @@
             "name": "userId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -260,8 +302,13 @@
         }
       },
       "delete": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "tags": [
-          "users"
+          "user"
         ],
         "summary": "delete user",
         "description": "Delete a user using an id",
@@ -273,7 +320,8 @@
             "name": "userId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -302,6 +350,11 @@
     },
     "/users/{role}": {
       "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "tags": [
           "users"
         ],
@@ -352,6 +405,18 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "RefreshKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "refreshToken"
+      }
+    },
     "schemas": {
       "User": {
         "type": "object",
@@ -420,7 +485,10 @@
       },
       "JwtAuthenticationRequest": {
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "properties": {
           "email": {
             "type": "string",
