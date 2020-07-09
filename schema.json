@@ -129,8 +129,15 @@
         "x-eov-operation-handler": "controllers/AuthenticationController",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": "The request has been fulfilled and has resulted in one or more new resources being created"
+          "200": {
+            "description": "The request has been fulfilled and a new access token has been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtAuthenticationResponse"
+                }
+              }
+            }
           },
           "440": {
             "description": "Your session has expired"
