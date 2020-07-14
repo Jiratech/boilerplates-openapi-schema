@@ -15,7 +15,7 @@
   },
   "tags": [
     {
-      "name": "users",
+      "name": "user",
       "description": "Endpoint for user related requests"
     },
     {
@@ -23,7 +23,7 @@
       "description": "Endpoint for authentication requests"
     },
     {
-      "name": "roles",
+      "name": "role",
       "description": "Endpoint for role related requests"
     }
   ],
@@ -33,9 +33,9 @@
         "tags": [
           "authentication"
         ],
-        "summary": "create user",
+        "summary": "register",
         "description": "",
-        "operationId": "createUser",
+        "operationId": "register",
         "x-eov-operation-handler": "controllers/AuthenticationController",
         "parameters": [],
         "requestBody": {
@@ -145,10 +145,10 @@
         }
       }
     },
-    "/roles": {
+    "/role": {
       "get": {
         "tags": [
-          "roles"
+          "role"
         ],
         "operationId": "getAllRoles",
         "x-eov-operation-handler": "controllers/RoleController",
@@ -172,7 +172,7 @@
         }
       }
     },
-    "/users": {
+    "/user": {
       "get": {
         "security": [
           {
@@ -200,6 +200,53 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "summary": "create user",
+        "description": "create any type of user",
+        "operationId": "createUser",
+        "x-eov-operation-handler": "controllers/UserController",
+        "parameters": [],
+        "requestBody": {
+          "description": "The user object to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The request has been fulfilled and has resulted in one or more new resources being created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request has wrong format"
+          },
+          "409": {
+            "description": "An account with the following email is already in use"
           },
           "401": {
             "description": "Unauthorized"
@@ -338,7 +385,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorMessages"
+                  "$ref": "#/components/schemas/ErrorMessage"
                 }
               }
             }
@@ -351,61 +398,6 @@
           },
           "404": {
             "description": "The requested resource was not found"
-          }
-        }
-      }
-    },
-    "/users/{role}": {
-      "post": {
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "create admin",
-        "description": "create any type of user with admin credentials",
-        "operationId": "createAdminUser",
-        "x-eov-operation-handler": "controllers/UserController",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "role",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The user object to be created",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The request has been fulfilled and has resulted in one or more new resources being created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request has wrong format"
-          },
-          "409": {
-            "description": "An account with the following email is already in use"
           }
         }
       }
@@ -430,36 +422,39 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "description": "email for current user",
             "example": "user@gmail.com"
           },
           "username": {
             "type": "string",
             "description": "Username",
-            "example": "example3"
+            "example": "JohnDoe"
           },
           "firstName": {
             "type": "string",
             "description": "firstName",
-            "example": "example3"
+            "example": "John"
           },
           "lastName": {
             "type": "string",
             "description": "lastName",
-            "example": "example3"
+            "example": "Doe"
           },
           "password": {
             "type": "string",
             "description": "password",
-            "example": "example!3"
+            "example": "password123"
           },
           "roleId": {
             "type": "string",
+            "format": "uuid",
             "description": "role for current user",
-            "example": "ROLE_EXAMPLE"
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
           },
           "userId": {
             "type": "string",
+            "format": "uuid",
             "description": "user unique uuid",
             "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
           },
@@ -499,13 +494,14 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "description": "email for current user",
             "example": "user@gmail.com"
           },
           "password": {
             "type": "string",
             "description": "password",
-            "example": "example!3"
+            "example": "password123"
           }
         }
       },
@@ -518,7 +514,7 @@
           },
           "refreshToken": {
             "type": "string",
-            "description": "secret token"
+            "description": "refresh token"
           }
         }
       },
@@ -526,10 +522,14 @@
         "type": "object",
         "properties": {
           "callbackRoute": {
-            "type": "string"
+            "type": "string",
+            "description": "route the sent to user in email in order to reset his password"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email",
+            "description": "email for current user",
+            "example": "user@gmail.com"
           }
         }
       },
@@ -537,13 +537,18 @@
         "type": "object",
         "properties": {
           "password": {
-            "type": "string"
+            "type": "string",
+            "description": "password",
+            "example": "password123"
           },
           "repeatPassword": {
-            "type": "string"
+            "type": "string",
+            "description": "password",
+            "example": "password123"
           },
           "token": {
-            "type": "string"
+            "type": "string",
+            "description": "one time token used to validate the password reset"
           }
         }
       },
@@ -551,13 +556,19 @@
         "type": "object",
         "properties": {
           "oldPassword": {
-            "type": "string"
+            "type": "string",
+            "description": "password",
+            "example": "password123"
           },
           "newPassword": {
-            "type": "string"
+            "type": "string",
+            "description": "password",
+            "example": "password123"
           },
           "repeatPassword": {
-            "type": "string"
+            "type": "string",
+            "description": "password",
+            "example": "password123"
           }
         }
       },
@@ -573,18 +584,18 @@
         "properties": {
           "roleId": {
             "type": "string",
+            "format": "uuid",
             "description": "unique role id for user",
-            "example": "ROLE_EXAMPLE"
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
           },
           "name": {
             "type": "string",
             "description": "unique role name for user",
-            "example": "user"
+            "example": "ROLE_USER"
           }
-        },
-        "uniqueItems": true
+        }
       },
-      "ErrorMessages": {
+      "ErrorMessage": {
         "type": "object",
         "properties": {
           "name": {
@@ -602,8 +613,7 @@
             "description": "Descriptive message for error",
             "example": "Request is not valid"
           }
-        },
-        "uniqueItems": true
+        }
       }
     }
   }
