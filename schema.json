@@ -36,6 +36,7 @@
         "summary": "register",
         "description": "",
         "operationId": "register",
+        "x-openapi-router-controller": "controllers.authentication_controller",
         "x-eov-operation-handler": "controllers/AuthenticationController",
         "parameters": [],
         "requestBody": {
@@ -77,6 +78,7 @@
         "summary": "authenticate user",
         "description": "",
         "operationId": "login",
+        "x-openapi-router-controller": "controllers.authentication_controller",
         "x-eov-operation-handler": "controllers/AuthenticationController",
         "parameters": [],
         "requestBody": {
@@ -126,6 +128,7 @@
         "summary": "get new access token",
         "description": "send refresh token to get new access token",
         "operationId": "refresh",
+        "x-openapi-router-controller": "controllers.authentication_controller",
         "x-eov-operation-handler": "controllers/AuthenticationController",
         "parameters": [],
         "responses": {
@@ -152,6 +155,7 @@
         ],
         "operationId": "getAllRoles",
         "x-eov-operation-handler": "controllers/RoleController",
+        "x-openapi-router-controller": "controllers.role_controller",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -186,6 +190,7 @@
         "description": "",
         "operationId": "getUsers",
         "x-eov-operation-handler": "controllers/UserController",
+        "x-openapi-router-controller": "controllers.user_controller",
         "parameters": [],
         "responses": {
           "200": {
@@ -219,6 +224,7 @@
         "description": "create any type of user",
         "operationId": "createUser",
         "x-eov-operation-handler": "controllers/UserController",
+        "x-openapi-router-controller": "controllers.user_controller",
         "parameters": [],
         "requestBody": {
           "description": "The user object to be created",
@@ -268,6 +274,7 @@
         "description": "Get one user using an id",
         "operationId": "getUserById",
         "x-eov-operation-handler": "controllers/UserController",
+        "x-openapi-router-controller": "controllers.user_controller",
         "parameters": [
           {
             "name": "userId",
@@ -314,6 +321,7 @@
         "description": "Modify a user using an id",
         "operationId": "modifyUser",
         "x-eov-operation-handler": "controllers/UserController",
+        "x-openapi-router-controller": "controllers.user_controller",
         "parameters": [
           {
             "in": "path",
@@ -368,6 +376,7 @@
         "description": "Delete a user using an id",
         "operationId": "deleteUser",
         "x-eov-operation-handler": "controllers/UserController",
+        "x-openapi-router-controller": "controllers.user_controller",
         "parameters": [
           {
             "in": "path",
@@ -408,12 +417,14 @@
       "BearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "bearerFormat": "JWT",
+        "x-apikeyInfoFunc": "app.apikey_auth"
       },
       "RefreshKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "refreshToken"
+        "name": "refreshToken",
+        "x-apikeyInfoFunc": "app.apikey_auth"
       }
     },
     "schemas": {
